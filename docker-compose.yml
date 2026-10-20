@@ -1,0 +1,71 @@
+# Graylog log-analysis lab -- single-host docker stack.
+#
+# THIS IS A LAB. OpenSearch runs with its security plugin DISABLED and
+# Graylog's root password is a placeholder you must replace (see below).
+# Never expose ports 514 / 9000 / 12201 of this stack to the internet.
+#
+# Before first start, set the two Graylog secrets below (or copy
+# .env.example to .env and fill them in -- docker compose reads .env
+# automatically for the ${...} substitutions):
+#
+#   GRAYLOG_PASSWORD_SECRET : at least 16 random chars, e.g.
+#       pwgen -N 1 -s 96
+#   GRAYLOG_ROOT_PASSWORD_SHA2 : SHA-256 hex of your chosen admin password:
+#       echo -n "your-admin-password" | sha256sum
+#   (the login user is "admin"). These placeholders are NOT real
+#   credentials -- they are deliberately unusable until you replace them.
+
+services:
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    # No host port: MongoDB is only reachable inside the compose network.
+
+  opensearch:
+    image: opensearchproject/opensearch:2.13.0
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      # LAB ONLY: without this, Graylog needs TLS certs + credentials just
+      # to talk to its own indexer. Never do this outside a local lab.
+      - plugins.security.disabled=true
+      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+      # Host needs: sudo sysctl -w vm.max_map_count=262144
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    # No host port for the same reason as mongo.
+
+  graylog:
+    image: graylog/graylog:6.1
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - opensearch
+    environment:
+      # --- placeholders: replace before first start (see header) ---
+      - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD_SECRET:-<generate-your-own-min-16-chars>}
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_ROOT_PASSWORD_SHA2:-<generate-your-own-sha256>}
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200
+      - GRAYLOG_MONGODB_URI=mongodb://mongo:27017/graylog
+    ports:
+      - "9000:9000"        # Graylog web UI / REST API
+      - "514:514/udp"      # Syslog UDP input
+      - "12201:12201"      # GELF TCP input
+      - "12201:12201/udp"  # GELF UDP input
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+
+volumes:
+  mongo_data:
+  opensearch_data:
+  graylog_data:
