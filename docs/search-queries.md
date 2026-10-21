@@ -102,7 +102,7 @@ behavior inside the network, not just at the SSH perimeter.
 ## 8. DNS queries to a specific domain
 
 ```
-tag:dnsmasq AND message:"query" AND message:"fileserver.lab.local"
+tag:dnsmasq AND message:"query" AND message:"fileserver.home.arpa"
 ```
 
 **What you're looking for:** who is resolving what. Two uses: (a) a user

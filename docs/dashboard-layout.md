@@ -56,6 +56,6 @@ the problem, the search does the forensics.
    lines and counts ("214 failures from 198.51.100.23 between 14:52–15:04,
    followed by one successful logon to deploy") — not "logs looked weird."
 
-With the lab generator you can rehearse the whole loop: run
+With the log generator you can rehearse the whole loop: run
 `--scenario bruteforce`, watch widgets 1–3 react, then run the click-through
 searches; run `--scenario vpn-flap` and watch widget 4 isolate the bad peer.

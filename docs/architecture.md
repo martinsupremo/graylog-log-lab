@@ -20,8 +20,8 @@ troubleshootable:
 ## Inputs
 
 - **Syslog UDP 514** — the workhorse for network gear, Linux servers, and
-  this lab's generator (`scripts/generate_logs.py`). UDP is fire-and-forget:
-  no delivery guarantee, so it's fine for a lab and common in production,
+  this implementation's generator (`scripts/generate_logs.py`). UDP is fire-and-forget:
+  no delivery guarantee, so it's fine here and common in production,
   but anything compliance-critical should ride TCP or a forwarder with a
   disk buffer (rsyslog omfwd, Graylog Forwarder, Filebeat).
 - **GELF 12201 (TCP/UDP)** — Graylog's native format. Structured from the
@@ -70,9 +70,9 @@ troubleshooting harder than it needs to be.
   your logs. Inputs bind to the LAN/VPN only; the web UI (9000) sits behind
   the VPN or a reverse proxy with auth.
 - **TLS:** inputs support TLS (Syslog TCP / GELF TLS) — use it for any
-  source crossing an untrusted network. This lab runs plaintext on loopback
+  source crossing an untrusted network. This implementation runs plaintext on loopback
   only, which is the *only* place that's acceptable.
-- **OpenSearch security is disabled in this compose file** so the lab works
+- **OpenSearch security is disabled in this compose file** so the implementation works
   without certificates — flagged in the file itself. On a real host, that's
   the first thing to turn back on (or keep OpenSearch unexposed on a private
   network, as the compose file does: it publishes no OpenSearch/Mongo port).

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synthetic log generator for the Graylog log-analysis lab.
+"""Synthetic log generator for the Graylog log-analysis implementation.
 
 Sends realistic RFC 3164-style syslog over UDP to a Graylog syslog input
 (default 127.0.0.1:514). Pure Python 3 standard library -- no dependencies.
@@ -20,7 +20,7 @@ Incident scenario modes:
                           peer, spaced out like a misbehaving tunnel.
 
 All IPs are RFC 5737 documentation ranges (192.0.2.0/24, 198.51.100.0/24)
-and all usernames/hosts are invented lab fixtures. Nothing here describes a
+and all usernames/hosts are invented fixtures. Nothing here describes a
 real system.
 
 Examples:
@@ -55,7 +55,7 @@ def syslog_line(facility, severity, hostname, tag, message, pid=None):
     return "<%d>%s %s %s: %s" % (pri, timestamp, hostname, tag_part, message)
 
 
-# --- lab fixture data -------------------------------------------------------
+# --- fixture data -------------------------------------------------------
 
 # Client / user hosts on the "internal" documentation range.
 LAN_IPS = ["192.0.2.%d" % n for n in (10, 11, 15, 22, 34, 41, 57)]
@@ -71,7 +71,7 @@ GUESS_USERS = ["root", "admin", "oracle", "test", "ubuntu", "postgres",
 WINDOWS_USERS = ["alice", "bob", "carla", "Administrator", "guest"]
 
 DOMAINS = [
-    "fileserver.lab.local", "vpn.lab.local", "mail.lab.local",
+    "fileserver.home.arpa", "vpn.home.arpa", "mail.home.arpa",
     "updates.example.org", "cdn.example.net", "docs.example.com",
 ]
 SUDO_COMMANDS = [
@@ -215,7 +215,7 @@ def scenario_vpn_flap(rng, count):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Synthetic syslog generator for the Graylog lab.")
+        description="Synthetic syslog generator for the Graylog implementation.")
     parser.add_argument("--host", default="127.0.0.1",
                         help="Graylog syslog input host (default 127.0.0.1)")
     parser.add_argument("--port", type=int, default=514,

@@ -1,6 +1,6 @@
-# Graylog log-analysis lab -- single-host docker stack.
+# Graylog log-analysis implementation -- single-host docker stack.
 #
-# THIS IS A LAB. OpenSearch runs with its security plugin DISABLED and
+# NOT FOR PRODUCTION. OpenSearch runs with its security plugin DISABLED and
 # Graylog's root password is a placeholder you must replace (see below).
 # Never expose ports 514 / 9000 / 12201 of this stack to the internet.
 #
@@ -28,8 +28,8 @@ services:
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      # LAB ONLY: without this, Graylog needs TLS certs + credentials just
-      # to talk to its own indexer. Never do this outside a local lab.
+      # TEST SETUP ONLY: without this, Graylog needs TLS certs + credentials just
+      # to talk to its own indexer. Never do this outside an isolated host.
       - plugins.security.disabled=true
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
       # Host needs: sudo sysctl -w vm.max_map_count=262144

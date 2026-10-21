@@ -1,7 +1,7 @@
-# Graylog Log Lab — Centralized Log Analysis for Incident Triage
+# Graylog Log Implementation — Centralized Log Analysis for Incident Triage
 
 
-> **Note on sources:** This lab recreates a deployment I administered in a professional role. Company names, hostnames, IP addresses, keys, and tenant identifiers have been sanitized or replaced with placeholders for confidentiality.
+> **Note on sources:** This implementation recreates a deployment I administered in a professional role. Company names, hostnames, IP addresses, keys, and tenant identifiers have been sanitized or replaced with placeholders for confidentiality.
 
 A working Graylog stack (server + OpenSearch + MongoDB) fed by a synthetic
 event generator, built for hands-on incident-triage practice: auth failures,
@@ -44,7 +44,7 @@ logs, and designing a dashboard around the first five minutes of an incident.
 
 | Path | Purpose |
 |---|---|
-| `docker-compose.yml` | Graylog + OpenSearch + MongoDB lab stack (ports 9000, 514/udp, 12201) |
+| `docker-compose.yml` | Graylog + OpenSearch + MongoDB implementation stack (ports 9000, 514/udp, 12201) |
 | `.env.example` | Copy to `.env`; how to generate the two Graylog secrets (placeholders only) |
 | `scripts/generate_logs.py` | Stdlib-only synthetic syslog generator (UDP), incl. `--scenario` incident modes |
 | `docs/architecture.md` | Design decisions: component roles, inputs, streams/index strategy, retention, hardening |
@@ -82,11 +82,11 @@ python3 scripts/generate_logs.py --scenario vpn-flap   --count 20
 ## Security notes
 
 - All IPs are RFC 5737 documentation ranges (192.0.2.0/24, 198.51.100.0/24);
-  all users/hosts are invented lab fixtures. Nothing here describes a real
+  all users/hosts are invented fixtures. Nothing here describes a real
   system.
 - Secrets live in `.env` (git-ignored), never in the repo. The compose file
   ships unusable `<generate-your-own>` placeholders on purpose.
-- **LAB ONLY:** OpenSearch's security plugin is disabled and Graylog's
+- **NOT FOR PRODUCTION:** OpenSearch's security plugin is disabled and Graylog's
   inputs are unauthenticated — acceptable on loopback, never on a network.
   Do not expose ports 514/9000/12201 to the internet. See the hardening
   notes in `docs/architecture.md` for what to change on a real host.
@@ -103,7 +103,7 @@ What was actually verified in the build environment:
   lines.
 - **Compose:** `docker-compose.yml` parsed with `yaml.safe_load` and
   asserted: exactly the three expected services, Graylog ports 9000 /
-  514/udp / 12201+12201/udp present, OpenSearch lab flags
+  514/udp / 12201+12201/udp present, OpenSearch test flags
   (`discovery.type=single-node`, `plugins.security.disabled=true`) set, and
   both Graylog secret fields contain only `<generate-your-own>` placeholders.
 - **Not validated here:** live UDP transmission — this sandbox blocks
