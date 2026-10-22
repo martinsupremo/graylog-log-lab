@@ -1,12 +1,9 @@
 # Graylog Log Implementation — Centralized Log Analysis for Incident Triage
 
-
-> **Note on sources:** This implementation recreates a deployment I administered in a professional role. Company names, hostnames, IP addresses, keys, and tenant identifiers have been sanitized or replaced with placeholders for confidentiality.
-
-A working Graylog stack (server + OpenSearch + MongoDB) fed by a synthetic
-event generator, built for hands-on incident-triage practice: auth failures,
-VPN handshake health, DNS activity, and Windows logon events — the exact
-log mix an L2/L3 support engineer reads when a ticket lands.
+In support work, a ticket comes in and the answer is usually in the logs. This repo
+is a Graylog stack (server, OpenSearch, MongoDB) fed by a small event generator, so
+I can practice triage on auth failures, VPN handshakes, DNS activity, and Windows
+logon events. All hosts and addresses are made up.
 
 **What this demonstrates:** centralized log ingestion (Syslog UDP / GELF),
 search-based triage with Lucene queries, the "narrow then widen" incident
@@ -92,27 +89,16 @@ python3 scripts/generate_logs.py --scenario vpn-flap   --count 20
   Do not expose ports 514/9000/12201 to the internet. See the hardening
   notes in `docs/architecture.md` for what to change on a real host.
 
-## Validation
+## Checks
 
-What was actually verified in the build environment:
-
-- **Generator:** `python3 -m py_compile` clean; every emitted line validated
-  against an RFC 3164 regex — 300 mixed events, 0 malformed (all five event
-  types, all three source hosts). Scenario runs asserted programmatically:
-  `bruteforce` produced 30 failures from 198.51.100.23 + exactly 1
-  success-after-failures; `vpn-flap` produced 12 PEER-B handshake-failure
-  lines.
-- **Compose:** `docker-compose.yml` parsed with `yaml.safe_load` and
-  asserted: exactly the three expected services, Graylog ports
-  127.0.0.1:9000 / 514:1514/udp / 12201+12201/udp present, OpenSearch test flags
-  (`discovery.type=single-node`, `plugins.security.disabled=true`) set, and
-  both Graylog secret fields contain only `<generate-your-own>` placeholders.
-- **Not validated here:** live UDP transmission — the local environment blocks
-  outbound `sendto()` at the OS level (EPERM even on loopback), so the
-  generator was validated via `--dry-run` output instead of a local UDP
-  capture. On a real host, point it at the Graylog syslog input and verify
-  messages arrive in the web UI's search view.
-- **Full stack bring-up was not tested here** — `docker compose up` needs a
-  real host with Docker and ~4 GB free RAM (plus `vm.max_map_count=262144`
-  for OpenSearch). The generator scenarios are what make the stack useful
-  once it's up.
+- **Event generator:** compiles cleanly, and every line it produces matches the
+  RFC 3164 syslog format (300 mixed events, 0 malformed). The `bruteforce`
+  scenario produces 30 failed logins from 198.51.100.23 followed by one
+  success, and `vpn-flap` produces 12 handshake failures.
+- **Compose file:** defines exactly the three expected services, binds the web
+  UI to 127.0.0.1:9000, maps syslog 514 to 1514/udp plus GELF on 12201/udp, and
+  leaves both Graylog secrets as `<generate-your-own>` placeholders.
+- **Next step:** start the stack on a host with Docker and about 4 GB of free
+  RAM (OpenSearch also needs `vm.max_map_count=262144`), point the generator at
+  the syslog input, and confirm the events show up in Graylog's search view.
+  Until then, the generator's `--dry-run` mode shows exactly what it would send.
