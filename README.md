@@ -50,7 +50,6 @@ logs, and designing a dashboard around the first five minutes of an incident.
 | `docs/architecture.md` | Design decisions: component roles, inputs, streams/index strategy, retention, hardening |
 | `docs/search-queries.md` | Sample triage searches (brute force, VPN-down verification, DNS hunts, …) |
 | `docs/dashboard-layout.md` | "First five minutes" triage dashboard: widgets, layout grid, workflow |
-| `docs/interview-answers.md` | "How do you use logs in incident triage?" — talking points for interviews |
 | `.gitignore` | `.env`, logs, `__pycache__` — secrets and noise never committed |
 
 ## Quick start
