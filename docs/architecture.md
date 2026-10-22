@@ -20,7 +20,10 @@ troubleshootable:
 ## Inputs
 
 - **Syslog UDP 514** — the workhorse for network gear, Linux servers, and
-  this implementation's generator (`scripts/generate_logs.py`). UDP is fire-and-forget:
+  this implementation's generator (`scripts/generate_logs.py`). Host-facing
+  port is 514; inside the container Graylog listens on 1514 (mapped
+  `514:1514/udp`) because the Graylog process runs non-root and cannot bind
+  privileged ports. UDP is fire-and-forget:
   no delivery guarantee, so it's fine here and common in production,
   but anything compliance-critical should ride TCP or a forwarder with a
   disk buffer (rsyslog omfwd, Graylog Forwarder, Filebeat).

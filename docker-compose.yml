@@ -4,6 +4,11 @@
 # Graylog's root password is a placeholder you must replace (see below).
 # Never expose ports 514 / 9000 / 12201 of this stack to the internet.
 #
+# Port notes: Graylog runs as a non-root user inside its container, so it
+# cannot bind the privileged port 514. The host-side syslog port stays 514
+# (mapped to container port 1514 -- create the Graylog Syslog UDP *input*
+# on port 1514). The web UI is bound to loopback only (127.0.0.1:9000).
+#
 # Before first start, set the two Graylog secrets below (or copy
 # .env.example to .env and fill them in -- docker compose reads .env
 # automatically for the ${...} substitutions):
@@ -58,8 +63,8 @@ services:
       - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200
       - GRAYLOG_MONGODB_URI=mongodb://mongo:27017/graylog
     ports:
-      - "9000:9000"        # Graylog web UI / REST API
-      - "514:514/udp"      # Syslog UDP input
+      - "127.0.0.1:9000:9000"  # Graylog web UI / REST API (loopback only)
+      - "514:1514/udp"         # Syslog UDP input (host 514 -> container 1514; non-root)
       - "12201:12201"      # GELF TCP input
       - "12201:12201/udp"  # GELF UDP input
     volumes:

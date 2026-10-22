@@ -44,7 +44,7 @@ logs, and designing a dashboard around the first five minutes of an incident.
 
 | Path | Purpose |
 |---|---|
-| `docker-compose.yml` | Graylog + OpenSearch + MongoDB implementation stack (ports 9000, 514/udp, 12201) |
+| `docker-compose.yml` | Graylog + OpenSearch + MongoDB implementation stack (9000 on loopback, 514/udp→1514, 12201) |
 | `.env.example` | Copy to `.env`; how to generate the two Graylog secrets (placeholders only) |
 | `scripts/generate_logs.py` | Stdlib-only synthetic syslog generator (UDP), incl. `--scenario` incident modes |
 | `docs/architecture.md` | Design decisions: component roles, inputs, streams/index strategy, retention, hardening |
@@ -65,7 +65,9 @@ docker compose up -d
 #    then: sudo sysctl -w vm.max_map_count=262144   (OpenSearch requirement)
 
 # 3. Open Graylog at http://127.0.0.1:9000/ (user: admin) and create a
-#    Syslog UDP input on port 514 — the generator speaks to it.
+#    Syslog UDP input on port 1514 (container-side; the host forwards
+#    514→1514 because Graylog runs non-root and can't bind 514).
+#    The generator sends to host port 514 as usual.
 
 # 4. Feed it logs
 python3 scripts/generate_logs.py --count 100 --rate 50
@@ -101,11 +103,11 @@ What was actually verified in the build environment:
   success-after-failures; `vpn-flap` produced 12 PEER-B handshake-failure
   lines.
 - **Compose:** `docker-compose.yml` parsed with `yaml.safe_load` and
-  asserted: exactly the three expected services, Graylog ports 9000 /
-  514/udp / 12201+12201/udp present, OpenSearch test flags
+  asserted: exactly the three expected services, Graylog ports
+  127.0.0.1:9000 / 514:1514/udp / 12201+12201/udp present, OpenSearch test flags
   (`discovery.type=single-node`, `plugins.security.disabled=true`) set, and
   both Graylog secret fields contain only `<generate-your-own>` placeholders.
-- **Not validated here:** live UDP transmission — this sandbox blocks
+- **Not validated here:** live UDP transmission — the local environment blocks
   outbound `sendto()` at the OS level (EPERM even on loopback), so the
   generator was validated via `--dry-run` output instead of a local UDP
   capture. On a real host, point it at the Graylog syslog input and verify

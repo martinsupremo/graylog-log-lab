@@ -219,7 +219,9 @@ def main(argv=None):
     parser.add_argument("--host", default="127.0.0.1",
                         help="Graylog syslog input host (default 127.0.0.1)")
     parser.add_argument("--port", type=int, default=514,
-                        help="UDP port of the syslog input (default 514)")
+                        help="UDP port of the syslog input (default 514, the "
+                             "HOST-side port; compose maps 514->1514 inside "
+                             "the container)")
     parser.add_argument("--count", type=int, default=200,
                         help="number of events to emit (default 200)")
     parser.add_argument("--rate", type=float, default=5.0,
