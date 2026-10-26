@@ -1,4 +1,4 @@
-# Graylog Log Implementation — Centralized Log Analysis for Incident Triage
+# Graylog Log Implementation: Centralized Log Analysis for Incident Triage
 
 In support work, a ticket comes in and the answer is usually in the logs. This repo
 is a Graylog stack (server, OpenSearch, MongoDB) fed by a small event generator, so
@@ -47,7 +47,7 @@ logs, and designing a dashboard around the first five minutes of an incident.
 | `docs/architecture.md` | Design decisions: component roles, inputs, streams/index strategy, retention, hardening |
 | `docs/search-queries.md` | Sample triage searches (brute force, VPN-down verification, DNS hunts, …) |
 | `docs/dashboard-layout.md` | "First five minutes" triage dashboard: widgets, layout grid, workflow |
-| `.gitignore` | `.env`, logs, `__pycache__` — secrets and noise never committed |
+| `.gitignore` | `.env`, logs, `__pycache__`: secrets and noise never committed |
 
 ## Quick start
 
@@ -85,7 +85,7 @@ python3 scripts/generate_logs.py --scenario vpn-flap   --count 20
 - Secrets live in `.env` (git-ignored), never in the repo. The compose file
   ships unusable `<generate-your-own>` placeholders on purpose.
 - **NOT FOR PRODUCTION:** OpenSearch's security plugin is disabled and Graylog's
-  inputs are unauthenticated — acceptable on loopback, never on a network.
+  inputs are unauthenticated, acceptable on loopback, never on a network.
   Do not expose ports 514/9000/12201 to the internet. See the hardening
   notes in `docs/architecture.md` for what to change on a real host.
 

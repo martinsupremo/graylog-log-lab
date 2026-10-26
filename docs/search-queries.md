@@ -1,9 +1,9 @@
-# Sample search queries — incident triage
+# Sample search queries: incident triage
 
 Graylog search uses Lucene-style syntax. Run these in the Search view with
 the time range noted; all of them work against the events produced by
 `scripts/generate_logs.py`. Tip: extractor fields (`source`, `facility`)
-depend on your input configuration — where a field is needed, the
+depend on your input configuration, where a field is needed, the
 message-text version is given too, because in a real incident you search
 with whatever the data actually has.
 
@@ -16,7 +16,7 @@ Time range: last 1 hour.
 
 **What you're looking for:** the baseline. A handful of failures scattered
 across users and IPs is normal noise (typos, expired keys). You're reading
-for *shape* — is it steady background noise, or a spike?
+for *shape*: is it steady background noise, or a spike?
 
 ## 2. Failures grouped by source IP
 
@@ -32,7 +32,7 @@ failures = attack or a misconfigured service hammering the server. Spread
 evenly = probably just a bad Monday. This is the brute-force detector;
 `--scenario bruteforce` makes one IP (198.51.100.23) dominate on purpose.
 
-## 3. Successful login after failures — possible compromise
+## 3. Successful login after failures: possible compromise
 
 ```
 message:"Accepted" AND message:"198.51.100.23"
@@ -94,7 +94,7 @@ obvious at a glance.
 message:"EventID=4625"
 ```
 
-**What you're looking for:** the Windows mirror of query 1 — failed logons
+**What you're looking for:** the Windows mirror of query 1, failed logons
 relayed by the collector. Group by `Account=` and `SourceIP=` the same way:
 many 4625s against one account from one workstation is password-spray
 behavior inside the network, not just at the SSH perimeter.
@@ -106,7 +106,7 @@ tag:dnsmasq AND message:"query" AND message:"fileserver.home.arpa"
 ```
 
 **What you're looking for:** who is resolving what. Two uses: (a) a user
-"can't reach the file server" — if their queries arrive and answers go out,
+"can't reach the file server", if their queries arrive and answers go out,
 DNS is innocent and you look at the service; if no queries arrive, their
-client isn't even asking your resolver; (b) hunting a suspicious domain —
+client isn't even asking your resolver; (b) hunting a suspicious domain,
 swap in the domain and you have every internal host that resolved it.
